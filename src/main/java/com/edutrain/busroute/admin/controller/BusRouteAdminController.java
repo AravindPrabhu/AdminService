@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.edutrain.busroute.admin.model.BusData;
 import com.edutrain.busroute.admin.model.BusRoute;
 import com.edutrain.busroute.admin.repository.BusRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @RestController
 @RequestMapping("/busroutes")
@@ -90,8 +93,17 @@ public class BusRouteAdminController {
 			busRoute = busData.getBusRoute();
 			String BusRouteStr = "BusNo: " + busRoute.getBusNo() + ",Source: " + busRoute.getSource()
 					+ ", Destination: " + busRoute.getDestination() + " ,Price: " + busRoute.getPrice();
-
-			return BusRouteStr;
+			
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			String jsonString;
+			try {
+				jsonString = ow.writeValueAsString(busRoute);
+				return jsonString;
+			} catch (JsonProcessingException e) {
+				
+				e.printStackTrace();
+				return "Exception occured";
+			}	
 
 		} else {
 
