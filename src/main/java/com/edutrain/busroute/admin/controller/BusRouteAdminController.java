@@ -14,12 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.edutrain.busroute.admin.model.BusData;
 import com.edutrain.busroute.admin.model.BusRoute;
 import com.edutrain.busroute.admin.repository.BusRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 @RestController
 @RequestMapping("/busroutes")
@@ -33,6 +37,8 @@ public class BusRouteAdminController {
 
 	@Autowired
 	private final BusRepository busRepository;
+	
+	private static final Logger LOGGER = LogManager.getLogger(BusRouteAdminController.class);
 
 	public BusRouteAdminController(BusRepository busRepository) {
 		this.busRepository = busRepository;
@@ -40,7 +46,7 @@ public class BusRouteAdminController {
 
 	@GetMapping("/getallbusroutes")
 	public List<String> getBusRoutes() {
-
+		LOGGER.info("In getallbusroutes");
 		List<BusRoute> BusRouteList = new ArrayList<BusRoute>();
 		List<String> stringRouteList = new ArrayList<String>();
 
@@ -58,10 +64,10 @@ public class BusRouteAdminController {
 	}
 
 	@PostMapping("/addbusroute")
-	public String addBusRoute(@RequestBody BusRoute busRoute) {
-
+	public Object addBusRoute(@RequestBody BusRoute busRoute) {
+		LOGGER.info("In addbusroute");
 		String busNumber = busRoute.getBusNo();
-		System.out.println("BusNumber in addbusroute is " + busNumber);
+		LOGGER.debug("BusNumber in addbusroute is " + busNumber);
 
 		// BusData busData= new BusData();
 		busData.setBusNo(busNumber);
@@ -84,7 +90,7 @@ public class BusRouteAdminController {
 
 	@GetMapping("/getbusroute/{BusNo}")
 	public String getBusRoute(@PathVariable String BusNo) {
-
+		LOGGER.info("In getBusRoute");
 		Optional<BusData> busDataRetValue = busRepository.findById(BusNo);
 
 		if (busDataRetValue.isPresent()) {
@@ -114,6 +120,8 @@ public class BusRouteAdminController {
 
 	@DeleteMapping("/deleteroute/{BusNo}")
 	public String deleteBusRoute(@PathVariable String BusNo) {
+		
+		LOGGER.info("In deleteBusRoute");
 		try {
 			busRepository.deleteById(BusNo);
 			return "Route Deleted successfully";
@@ -125,9 +133,9 @@ public class BusRouteAdminController {
 
 	@PutMapping("/updateeroute")
 	public String updateBusRoute(@RequestBody BusRoute busRoute) {
-
+		LOGGER.info("In updateBusRoute");
 		String busNumber = busRoute.getBusNo();
-		System.out.println("BusNumber in addbusroute is " + busNumber);
+		LOGGER.debug("BusNumber in addbusroute is " + busNumber);
 		String RetValue = getBusRoute(busNumber);
 
 		if (RetValue.equalsIgnoreCase("Route Not found")) {
